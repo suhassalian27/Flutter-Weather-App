@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() => runApp(WeatherApp());
 
@@ -9,6 +11,34 @@ class WeatherApp extends StatefulWidget {
 class _WeatherAppState extends State<WeatherApp> {
   int temperature = 0;
   String location = "Mumbai";
+  int woeid = 12586539;
+  String weather = "clear";
+
+  String searchApiUrl =
+      "https://www.metaweather.com/api/location/search/?query=";
+  String locationApiUrl = "https://www.metaweather.com/api/location/";
+
+  void fetchSearch(String input) async {
+    var searchResult = await http.get(searchApiUrl + input);
+    var result = json.decode(searchResult.body)[0];
+
+    setState(() {
+      location = result["title"];
+      woeid = result["woeid"];
+    });
+  }
+
+  void fetchLocation() async {
+    var locationResult = await http.get(locationApiUrl + woeid.toString());
+    var result = json.decode(locationResult.body);
+    var consolidated_weather = result["consolidated_weather"];
+    var data = consolidated_weather[0];
+
+    setState(() {
+      temperature = data["the_temp"].round();
+      weather = data["weather_state_name"].replaceAll(' ', '').toLowerCase();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
