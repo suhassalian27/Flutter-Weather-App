@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
 
 void main() => runApp(WeatherApp());
 
@@ -9,23 +10,36 @@ class WeatherApp extends StatefulWidget {
 }
 
 class _WeatherAppState extends State<WeatherApp> {
-  int temperature = 0;
+  int temperature;
   String location = "Mumbai";
   int woeid = 12586539;
   String weather = "clear";
+  String abbreviation = '';
+  String errorMessage = '';
 
   String searchApiUrl =
       "https://www.metaweather.com/api/location/search/?query=";
   String locationApiUrl = "https://www.metaweather.com/api/location/";
 
-  void fetchSearch(String input) async {
-    var searchResult = await http.get(searchApiUrl + input);
-    var result = json.decode(searchResult.body)[0];
+  @override
+  void initState() {
+    super.initState();
+    fetchLocation();
+  }
 
-    setState(() {
-      location = result["title"];
-      woeid = result["woeid"];
-    });
+  void fetchSearch(String input) async {
+    try {
+      var searchResult = await http.get(searchApiUrl + input);
+      var result = json.decode(searchResult.body)[0];
+
+      setState(() {
+        location = result["title"];
+        woeid = result["woeid"];
+        errorMessage = '';
+      });
+    } catch (error) {
+      errorMessage = "Sorry, The city you entered has not found.";
+    }
   }
 
   void fetchLocation() async {
@@ -37,6 +51,7 @@ class _WeatherAppState extends State<WeatherApp> {
     setState(() {
       temperature = data["the_temp"].round();
       weather = data["weather_state_name"].replaceAll(' ', '').toLowerCase();
+      abbreviation = data["weather_state_abbr"];
     });
   }
 
@@ -54,52 +69,73 @@ class _WeatherAppState extends State<WeatherApp> {
         image: AssetImage('images/$weather.png'),
         fit: BoxFit.cover,
       )),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Center(
-                  child: Text(
-                    temperature.toString() + " 'C",
-                    style: TextStyle(color: Colors.white, fontSize: 60.0),
-                  ),
-                ),
-                Center(
-                  child: Text(
-                    location,
-                    style: TextStyle(color: Colors.white, fontSize: 40.0),
-                  ),
-                )
-              ],
-            ),
-            Column(
-              children: <Widget>[
-                Container(
-                  width: 300,
-                  child: TextField(
-                    onSubmitted: (String input) {
-                      onTextFieldSubmitted(input);
-                    },
-                    style: TextStyle(color: Colors.white, fontSize: 25.0),
-                    decoration: InputDecoration(
-                        hintText: 'Search another location...',
-                        hintStyle:
-                            TextStyle(color: Colors.white, fontSize: 18.0),
-                        prefix: Icon(
-                          Icons.search,
-                          color: Colors.white,
-                        )),
-                  ),
-                )
-              ],
+      child: temperature == null
+          ? Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
             )
-          ],
-        ),
-      ),
+          : Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Center(
+                        child: Image.network(
+                          "https://www.metaweather.com/static/img/weather/png/" +
+                              abbreviation +
+                              ".png",
+                          width: 100.0,
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                          temperature.toString() + " 'C",
+                          style: TextStyle(color: Colors.white, fontSize: 60.0),
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                          location,
+                          style: TextStyle(color: Colors.white, fontSize: 40.0),
+                        ),
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Container(
+                        width: 300,
+                        child: TextField(
+                          onSubmitted: (String input) {
+                            onTextFieldSubmitted(input);
+                          },
+                          style: TextStyle(color: Colors.white, fontSize: 25.0),
+                          decoration: InputDecoration(
+                              hintText: 'Search another location...',
+                              hintStyle: TextStyle(
+                                  color: Colors.white, fontSize: 18.0),
+                              prefix: Icon(
+                                Icons.search,
+                                color: Colors.white,
+                              )),
+                        ),
+                      ),
+                      Text(
+                        errorMessage,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: Platform.isAndroid ? 20.0 : 20.0),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
     ));
   }
 }
