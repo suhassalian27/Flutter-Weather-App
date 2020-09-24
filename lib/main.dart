@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
+import 'package:intl/intl.dart';
 
 void main() => runApp(WeatherApp());
 
@@ -12,10 +14,13 @@ class WeatherApp extends StatefulWidget {
 
 class _WeatherAppState extends State<WeatherApp> {
   int temperature;
+  var minTemperatureForecast = new List(7);
+  var maxTemperatureForecast = new List(7);
   String location = "Mumbai";
   int woeid = 12586539;
   String weather = "clear";
   String abbreviation = '';
+  var abbreviationForecast = new List(7);
   String errorMessage = '';
 
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
@@ -31,6 +36,7 @@ class _WeatherAppState extends State<WeatherApp> {
   void initState() {
     super.initState();
     fetchLocation();
+    fetchLocationDay();
   }
 
   void fetchSearch(String input) async {
@@ -61,9 +67,30 @@ class _WeatherAppState extends State<WeatherApp> {
     });
   }
 
+  void fetchLocationDay() async {
+    var today = new DateTime.now();
+    for (var i = 0; i < 7; i++) {
+      var locationDayResult = await http.get(locationApiUrl +
+          woeid.toString() +
+          '/' +
+          new DateFormat('y/M/d')
+              .format(today.add(new Duration(days: i + 1)))
+              .toString());
+      var result = json.decode(locationDayResult.body);
+      var data = result[0];
+
+      setState(() {
+        minTemperatureForecast[i] = data["min_temp"].round();
+        maxTemperatureForecast[i] = data["max_temp"].round();
+        abbreviationForecast[i] = data["weather_state_abbr"];
+      });
+    }
+  }
+
   void onTextFieldSubmitted(String input) async {
     await fetchSearch(input);
     await fetchLocation();
+    await fetchLocationDay();
   }
 
   _getCurrentLocation() {
@@ -105,9 +132,10 @@ class _WeatherAppState extends State<WeatherApp> {
         home: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-            image: AssetImage('images/$weather.png'),
-            fit: BoxFit.cover,
-          )),
+                  image: AssetImage('images/$weather.png'),
+                  fit: BoxFit.cover,
+                  colorFilter: new ColorFilter.mode(
+                      Colors.black.withOpacity(0.6), BlendMode.dstATop))),
           child: temperature == null
               ? Center(
                   child: CircularProgressIndicator(
@@ -162,6 +190,20 @@ class _WeatherAppState extends State<WeatherApp> {
                           )
                         ],
                       ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: <Widget>[
+                            for (var i = 0; i < 7; i++)
+                              forecastElement(
+                                i + 1,
+                                abbreviationForecast[i].toString(),
+                                minTemperatureForecast[i],
+                                maxTemperatureForecast[i],
+                              )
+                          ],
+                        ),
+                      ),
                       Column(
                         children: <Widget>[
                           Container(
@@ -196,4 +238,49 @@ class _WeatherAppState extends State<WeatherApp> {
                 ),
         ));
   }
+}
+
+Widget forecastElement(
+    daysFromNow, abbreviation, minTemperature, maxTemperature) {
+  var now = new DateTime.now();
+  var oneDayFromNow = now.add(new Duration(days: daysFromNow));
+  return Padding(
+    padding: const EdgeInsets.only(left: 16.0),
+    child: Container(
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(205, 212, 220, 0.2),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: <Widget>[
+            Text(new DateFormat.E().format(oneDayFromNow),
+                style: TextStyle(color: Colors.white, fontSize: 25)),
+            Text(
+              new DateFormat.MMMd().format(oneDayFromNow),
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+              child: Image.network(
+                "https://www.metaweather.com/static/img/weather/png/" +
+                    abbreviation +
+                    ".png",
+                width: 50.0,
+              ),
+            ),
+            Text(
+              'High: ' + maxTemperature.toString() + " 'C",
+              style: TextStyle(color: Colors.white, fontSize: 20.0),
+            ),
+            Text(
+              'Min: ' + minTemperature.toString() + " 'C",
+              style: TextStyle(color: Colors.white, fontSize: 20.0),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
