@@ -40,13 +40,18 @@ class _WeatherAppState extends State<WeatherApp> {
     });
   }
 
+  void onTextFieldSubmitted(String input) async {
+    await fetchSearch(input);
+    await fetchLocation();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-        image: AssetImage('images/clear.png'),
+        image: AssetImage('images/$weather.png'),
         fit: BoxFit.cover,
       )),
       child: Scaffold(
@@ -76,6 +81,9 @@ class _WeatherAppState extends State<WeatherApp> {
                 Container(
                   width: 300,
                   child: TextField(
+                    onSubmitted: (String input) {
+                      onTextFieldSubmitted(input);
+                    },
                     style: TextStyle(color: Colors.white, fontSize: 25.0),
                     decoration: InputDecoration(
                         hintText: 'Search another location...',
