@@ -1,10 +1,39 @@
-# flutter_weather_app
+#  Flutter Weather App
+Flutter app created using Weather Api.
 
-A new Flutter project.
 
-## Getting Started
+## Table of contents
+* [Prerequisites](#prerequisites)
+* [Technologies](#technologies)
+* [Features](#features)
+* [UI](#ui)
+* [Resources and Documentation](#Resources and Documentation)
+* [Contact](#contact)
 
-This project is a starting point for a Flutter application.
+
+## Prerequisites
+- Text Editor ([VS Code](https://code.visualstudio.com/download) , [Android Studio](https://developer.android.com/studio)
+- Flutter - [install here](https://flutter.dev/docs/get-started/install)
+
+
+## Technologies
+Project is created with:
+* Dart
+
+## Features
+List of features ready and TODOs for future development
+* Display present day Weather details based on the location.
+* Gives seven day weather forcast based on the location.
+* Search City's
+* GeoLocator, provides current user location based on GPS.
+
+To-do list:
+* Add current day weather report at different time.
+
+## UI
+
+
+## Resources and Documentation
 
 A few resources to get you started if this is your first Flutter project:
 
@@ -14,3 +43,9 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+
+## Contact
+[Suhas Suhas](https://www.suhassalian.netlify.com/) - feel free to contact me!
+
