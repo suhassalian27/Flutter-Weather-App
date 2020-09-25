@@ -7,7 +7,7 @@ Flutter app created using Weather Api.
 * [Technologies](#technologies)
 * [Features](#features)
 * [UI](#ui)
-* [Resources and Documentation](#Resources and Documentation)
+* [Resources](#Resources)
 * [Contact](#contact)
 
 
@@ -31,9 +31,9 @@ To-do list:
 * Add current day weather report at different time.
 
 ## UI
+![Main](screenshots/ui1.gif)
 
-
-## Resources and Documentation
+## Resources
 
 A few resources to get you started if this is your first Flutter project:
 
