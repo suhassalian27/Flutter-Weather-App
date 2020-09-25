@@ -18,7 +18,7 @@ Flutter app created using Weather Api.
 
 ## Technologies
 Project is created with:
-* Meta Weather API [API Link](https://www.metaweather.com/api/)
+* [Meta Weather API](https://www.metaweather.com/api/)
 
 ## Features
 List of features ready and TODOs for future development
