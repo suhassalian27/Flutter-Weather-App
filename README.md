@@ -21,13 +21,13 @@ Project is created with:
 * [Meta Weather API](https://www.metaweather.com/api/)
 
 ## Features
-List of features ready and TODOs for future development
+#### List of features ready and TODOs for future development
 * Display present day Weather details based on the location.
 * Gives seven day weather forcast based on the location.
 * Search City's
 * GeoLocator, provides current user location based on GPS.
 
-To-do list:
+#### To-do:
 * Add current day weather report at different time.
 
 ## UI
