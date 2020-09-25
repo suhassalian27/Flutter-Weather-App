@@ -33,7 +33,7 @@ Project is created with:
 
 ## UI
 <p align="center">
-![Main](screenshots/ui1.gif)
+  <img src="screenshots/ui1.gif" />
 </p>
 
 
