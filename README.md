@@ -30,8 +30,12 @@ Project is created with:
 #### To-do:
 * Add current day weather report at different time.
 
+
 ## UI
+<p align="center">
 ![Main](screenshots/ui1.gif)
+</p>
+
 
 ## Resources
 
